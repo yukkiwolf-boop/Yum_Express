@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>YumExpress — Premium Delivery</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      /* DARK MODE DEFAULTS (Original) */
+      --page-bg: #060606;
+      --panel: #0f0f10;
+      --panel-2: #131313;
+      --card: #121213;
+      --text-main: #eeeeee;
+      --text-muted: #bfb8ac;
+      --accent: #d4af37;        /* gold */
+      --accent-2: #ffd966;
+      --glass: rgba(255,255,255,0.03);
+      --border: rgba(255,255,255,0.05);
+      --shadow: 0 18px 40px rgba(0,0,0,0.6);
+      --radius: 12px;
+      --gold-border: 1px solid rgba(212,175,55,0.12);
+      --input-bg: transparent;
+    }
+
+    /* LIGHT MODE OVERRIDES */
+    .light-mode {
+      --page-bg: #f4f4f5;
+      --panel: #ffffff;
+      --panel-2: #fafafa;
+      --card: #ffffff;
+      --text-main: #1a1a1a;
+      --text-muted: #666666;
+      --accent: #b08d26;        /* darker gold for contrast */
+      --accent-2: #e0c055;
+      --glass: rgba(0,0,0,0.03);
+      --border: rgba(0,0,0,0.08);
+      --shadow: 0 10px 30px rgba(0,0,0,0.08);
+      --input-bg: rgba(0,0,0,0.03);
+      --gold-border: 1px solid rgba(176,141,38,0.2);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,system-ui,Arial;background:var(--page-bg);color:var(--text-main);-webkit-font-smoothing:antialiased; transition: background 0.3s, color 0.3s;}
+    a{color:inherit;text-decoration:none}
+
+    /* FULL WIDTH LAYOUT */
+    .page{width:100%;padding:12px 14px}
+    .wrap{max-width:1400px;margin:0 auto}
+
+    /* HEADER */
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:76px;height:76px;border-radius:12px;background:linear-gradient(135deg,#111, rgba(0,0,0,0.6));display:flex;align-items:center;justify-content:center;border:1px solid var(--border)}
+    .logo svg{width:44px;height:44px}
+    .title{font-family:Playfair Display,serif;font-size:26px;color:var(--accent);line-height:1}
+    .subtitle{font-size:12px;color:var(--text-muted);margin-top:2px}
+
+    .header-actions{display:flex;align-items:center;gap:10px}
+    .search{padding:10px 12px;border-radius:999px;background:var(--glass);border:1px solid var(--border);min-width:220px;color:var(--text-main)}
+    .icon-btn{background:transparent;border:1px solid var(--border);padding:8px 10px;border-radius:10px;color:var(--text-muted);cursor:pointer; transition: 0.2s;}
+    .icon-btn:hover{background:var(--glass);color:var(--accent);}
+    .gold-pill{padding:8px 12px;border-radius:999px;background:linear-gradient(90deg, rgba(212,175,55,0.08), rgba(212,175,55,0.03));border:var(--gold-border);color:var(--accent);font-weight:700}
+
+    @media(max-width:820px){ .header-actions{gap:6px} .search{display:none} }
+
+    /* HERO */
+    .hero-wrap{margin-top:8px;border-radius:12px;overflow:hidden;position:relative;box-shadow:var(--shadow)}
+    .hero{background-image:url('https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1800&q=80');background-size:cover;background-position:center;height:46vh;min-height:300px;display:flex;align-items:end}
+    .hero-dim{position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.62));}
+    .hero-content{position:relative;z-index:3;padding:36px;display:flex;justify-content:space-between;gap:16px}
+    .hero-left{max-width:880px}
+    .hero h1{margin:0;font-family:Playfair Display,serif;font-size:40px;color:#fff;letter-spacing:0.4px}
+    .hero p{margin:8px 0 0;color:rgba(255,255,255,0.9);font-size:16px}
+    .hero-cta{margin-top:12px;display:flex;gap:10px}
+    .btn{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#111;border:0;padding:10px 14px;border-radius:12px;font-weight:700;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+    .btn-ghost{background:transparent;border:1px solid rgba(255,255,255,0.2);color:var(--text-main);padding:10px 12px;border-radius:12px;cursor:pointer}
+    .hero .btn-ghost { color: #fff; border-color: rgba(255,255,255,0.3); } /* Force white in hero */
+
+    /* FREE SHIPPING banner */
+    .free-shipping{margin-top:12px;padding:12px;border-radius:10px;background:var(--panel-2);border:var(--gold-border);display:flex;align-items:center;gap:12px}
+    .fs-badge{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#111;padding:8px 10px;border-radius:8px;font-weight:800}
+    .fs-text{color:var(--text-muted);font-weight:700}
+
+    /* CATEGORIES */
+    .categories-wrap{margin-top:14px;padding:14px;border-radius:10px;background:var(--panel-2);border:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .cat-btn{padding:10px 12px;border-radius:999px;background:transparent;border:1px solid var(--border);color:var(--text-muted);cursor:pointer;font-weight:700}
+    .cat-btn.active{background:linear-gradient(90deg, rgba(212,175,55,0.15), rgba(212,175,55,0.05));color:var(--accent);border-color:rgba(212,175,55,0.3)}
+
+    /* MAIN */
+    .main{display:flex;gap:18px;margin-top:16px}
+    .left{flex:1}
+    .right{width:360px;min-width:260px}
+    .products-section{padding:14px;border-radius:10px;background:var(--panel-2);border:1px solid var(--border)}
+
+    /* GRID */
+    .grid{display:grid;gap:18px;margin-top:12px}
+    @media (min-width:1200px){ .grid{grid-template-columns: repeat(4, 1fr);} }
+    @media (min-width:800px) and (max-width:1199px){ .grid{grid-template-columns: repeat(2, 1fr);} }
+    @media (max-width:799px){ .grid{grid-template-columns: 1fr;} .right{display:none} .hero h1{font-size:28px} .hero{height:36vh} }
+
+    .card{background:var(--card);border-radius:10px;padding:10px;border:1px solid var(--border);box-shadow:0 10px 30px rgba(0,0,0,0.1);display:flex;flex-direction:column;gap:8px}
+    .card img{width:100%;height:160px;object-fit:cover;border-radius:8px}
+    .card h4{margin:0;font-size:16px;color:var(--text-main)}
+    .meta{color:var(--text-muted);font-size:13px}
+    .price{font-weight:800;color:var(--accent)}
+    .card-footer{display:flex;justify-content:space-between;align-items:center;gap:8px}
+    .rating-line{display:flex;gap:8px;align-items:center}
+    .tiny-star{color:var(--accent);font-weight:800}
+    .small-btn{padding:8px 10px;border-radius:10px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--text-main)}
+
+    /* WIDGETS */
+    .widget{background:var(--panel);border-radius:10px;padding:12px;border:1px solid var(--border);box-shadow:var(--shadow);margin-bottom:12px}
+    .widget h4{margin:0 0 8px 0; color:var(--text-main)}
+    .review-item{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:10px;border:1px solid var(--border);margin-bottom:10px}
+    .review-item img{width:56px;height:56px;border-radius:999px;object-fit:cover}
+
+    /* CART DRAWER */
+    .cart-fab{position:fixed;right:22px;bottom:22px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#111;padding:12px 14px;border-radius:999px;z-index:160;box-shadow:0 18px 48px rgba(0,0,0,0.6);cursor:pointer;border:0;font-weight:800}
+    .cart-drawer{position:fixed;right:-420px;top:0;height:100%;width:420px;background:var(--panel);border-left:1px solid var(--border);z-index:150;padding:18px;transition:right .28s ease;overflow:auto;box-shadow:-8px 0 40px rgba(0,0,0,0.5)}
+    .cart-drawer.open{right:0}
+    .cart-item-img{width:64px;height:64px;border-radius:8px;object-fit:cover}
+
+    /* MODAL */
+    .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);align-items:center;justify-content:center;z-index:210;padding:18px}
+    .modal .panel{background:var(--panel);padding:18px;border-radius:12px;max-width:920px;width:100%;box-shadow:var(--shadow);border:1px solid var(--border); color: var(--text-main);}
+    .close-btn{background:none;border:none;color:var(--text-muted);font-size:18px;cursor:pointer}
+
+    input,select,textarea{background:var(--input-bg);border:1px solid var(--border);color:var(--text-main);padding:10px;border-radius:8px;width:100%}
+    textarea{resize:vertical}
+    footer{margin-top:24px;padding:18px;text-align:center;color:var(--text-muted)}
+
+    .muted{color:var(--text-muted)}
+    .hidden{display:none}
+    
+    /* Receipt Styles */
+    .receipt-paper {
+        background: #fff;
+        color: #000;
+        padding: 20px;
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        border: 1px dashed #ccc;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    .receipt-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+    .receipt-line { border-bottom: 1px dashed #000; margin: 10px 0; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="wrap">
+
+      <header>
+        <div class="brand">
+          <div class="logo" aria-hidden>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 2v6a3 3 0 0 1-2 2.83V22h2v-9.17A3 3 0 0 1 7 8V2zM12 2v8a3 3 0 0 1-2 2.83V22h2V12.83A3 3 0 0 1 12 10V2zM17 2v6a3 3 0 0 1-2 2.83V22h2V10.83A3 3 0 0 1 17 8V2z" fill="#d4af37"/></svg>
+          </div>
+          <div>
+            <div class="title">YumExpress</div>
+            <div class="subtitle">Premium • Fast • Curated</div>
+          </div>
+        </div>
+
+        <div class="header-actions" id="headerActions">
+          <input id="globalSearch" class="search" placeholder="Search dishes or ingredients (Enter)" aria-label="Search">
+          <button class="gold-pill" id="promoCopy">WELCOME20</button>
+           <button class="icon-btn" onclick="toggleTheme()" title="Toggle Light/Dark Mode">
+             <span id="themeIcon">☀️</span>
+          </button>
+          <div id="userArea">
+            <button class="icon-btn" onclick="openLogin()">Login / Signup</button>
+          </div>
+          <button class="icon-btn" onclick="openCart()">Cart (<span id="cartCount">0</span>)</button>
+        </div>
+      </header>
+
+      <div class="hero-wrap">
+        <section class="hero" role="banner" aria-label="Hero banner">
+          <div class="hero-dim"></div>
+          <div class="hero-content">
+            <div class="hero-left">
+              <h1>Chef-curated meals delivered premium & warm.</h1>
+              <p>From hearty rice plates to wagyu burgers and indulgent desserts. Fast delivery and premium packaging.</p>
+              <div class="hero-cta">
+                <button class="btn" onclick="scrollToSection('menu')">Order Now</button>
+                <button class="btn-ghost" onclick="openLogin()">Account</button>
+                <button class="btn-ghost" onclick="scrollToSection('reviews')">See Reviews</button>
+              </div>
+            </div>
+
+            <div style="display:flex;flex-direction:column;gap:10px;min-width:300px;max-width:360px;" class="hide-mobile">
+              <div style="background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(0,0,0,0.15));padding:10px;border-radius:10px;border:1px solid rgba(255,255,255,0.02)">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div>
+                    <div style="font-weight:800;color:var(--accent)">Chef's Choice</div>
+                    <div style="color:rgba(255,255,255,0.7);font-size:13px">Top-selling dishes today</div>
+                  </div>
+                  <div style="font-weight:800;color:var(--accent)">Hot</div>
+                </div>
+                <img src="https://images.unsplash.com/photo-1604908177522-3b7f7d5b7b7b?auto=format&fit=crop&w=800&q=80" alt="chef pick" style="width:100%;height:120px;object-fit:cover;border-radius:8px;margin-top:8px">
+              </div>
+
+              <div style="background:linear-gradient(90deg, rgba(212,175,55,0.03), rgba(255,255,255,0.01));padding:10px;border-radius:10px;border:var(--gold-border);">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div style="font-size:28px;font-weight:800;color:var(--accent)" id="overallRating">4.6</div>
+                  <div style="text-align:right">
+                    <div style="font-weight:700;color:var(--accent)">4.6 average</div>
+                    <div style="color:rgba(255,255,255,0.7);font-size:13px">based on sample reviews</div>
+                  </div>
+                </div>
+                <div style="margin-top:8px" id="featuredReviews"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div id="freeShippingBanner" class="free-shipping" role="status" aria-live="polite">
+        <div class="fs-badge">FREE</div>
+        <div>
+          <div style="font-weight:800; color:var(--text-main)">Free shipping on your first order</div>
+          <div class="fs-text">Automatically applied at checkout. (One-time)</div>
+        </div>
+        <div style="margin-left:auto">
+          <button class="btn-ghost" onclick="dismissFreeShipping()">Dismiss</button>
+        </div>
+      </div>
+
+      <div class="categories-wrap" role="navigation" aria-label="Product categories">
+        <button class="cat-btn active" data-cat="all" onclick="setCategory('all')">All</button>
+        <button class="cat-btn" data-cat="rice" onclick="setCategory('rice')">Rice Meals</button>
+        <button class="cat-btn" data-cat="burgers" onclick="setCategory('burgers')">Burgers</button>
+        <button class="cat-btn" data-cat="pasta" onclick="setCategory('pasta')">Pasta</button>
+        <button class="cat-btn" data-cat="pizza" onclick="setCategory('pizza')">Pizza</button>
+        <button class="cat-btn" data-cat="drinks" onclick="setCategory('drinks')">Drinks</button>
+        <button class="cat-btn" data-cat="desserts" onclick="setCategory('desserts')">Desserts</button>
+
+        <div style="margin-left:auto;display:flex;gap:8px;align-items:center">
+          <select id="categoryFilter">
+            <option value="all">All categories</option>
+            <option value="rice">Rice Meals</option>
+            <option value="burgers">Burgers</option>
+            <option value="pasta">Pasta</option>
+            <option value="pizza">Pizza</option>
+            <option value="drinks">Drinks</option>
+            <option value="desserts">Desserts</option>
+          </select>
+          <input id="filterSearch" placeholder="Filter products" />
+        </div>
+      </div>
+
+      <div class="main">
+        <div class="left">
+          <section id="menu" class="products-section">
+            <div style="display:flex;justify-content:space-between;align-items:center">
+              <h3 style="margin:0;font-family:Playfair Display,serif; color:var(--text-main)">Menu</h3>
+              <div class="muted" id="showingLabel">Showing: All</div>
+            </div>
+            <div id="productGrid" class="grid" aria-live="polite"></div>
+          </section>
+
+          <section id="reviews" style="margin-top:18px">
+            <h3 style="font-family:Playfair Display,serif; color:var(--text-main)">Customer Reviews</h3>
+            <div class="muted" style="margin-top:6px">All product reviews (sample, local)</div>
+            <div id="reviewsList" style="margin-top:12px"></div>
+          </section>
+        </div>
+
+        <aside class="right">
+          <div class="widget">
+            <h4>Cart Snapshot</h4>
+            <div id="cartSnapshot" style="margin-top:8px" class="muted">Cart empty</div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn" onclick="openCart()">Open Cart</button>
+              <button class="btn-ghost" onclick="checkoutMock()">Checkout</button>
+            </div>
+          </div>
+
+          <div class="widget">
+            <h4>Account</h4>
+            <div id="accountWidget">
+              <div class="muted">Not signed in</div>
+              <div style="display:flex;gap:8px;margin-top:8px">
+                <button class="btn-ghost" onclick="openLogin()">Login / Signup</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="widget">
+            <h4>Top Reviews</h4>
+            <div id="topReviewsList"></div>
+          </div>
+        </aside>
+      </div>
+
+      <footer style="margin-top:22px;padding-bottom:12px;text-align:center;color:var(--text-muted)">
+        <div style="font-weight:700">YumExpress</div>
+        <div class="muted" style="margin-top:6px">hello@yumexpress.ph • +63 912 000 0000</div>
+        <div class="muted" style="margin-top:6px">© YumExpress — Premium Delivery</div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="cartDrawer" class="cart-drawer" aria-hidden="true">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <h3 style="margin:0;font-family:Playfair Display,serif; color:var(--text-main)">Your Order</h3>
+      <button onclick="closeCart()" class="close-btn">✖</button>
+    </div>
+    <div id="cartItems" style="margin-top:12px"></div>
+
+    <div style="margin-top:12px;border-top:1px dashed var(--border);padding-top:12px">
+      <div style="display:flex;justify-content:space-between; color:var(--text-main)"><div>Subtotal</div><div id="cartSubtotal">₱0</div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px; color:var(--text-main)"><div>Delivery</div><div id="cartShipping">₱80</div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:6px;font-weight:800; color:var(--text-main)"><div>Total</div><div id="cartTotal">₱0</div></div>
+
+      <div style="margin-top:12px;display:flex;gap:8px">
+        <button class="btn" onclick="openCheckout()">Checkout</button>
+        <button class="btn-ghost" onclick="clearCart()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="quickView" class="modal" aria-hidden="true">
+    <div class="panel" role="dialog" aria-modal="true" aria-labelledby="q_name">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 id="q_name" style="margin:0"></h3>
+        <button class="close-btn" onclick="closeQuick()">✖</button>
+      </div>
+      <div style="display:flex;gap:16px;margin-top:12px;flex-wrap:wrap">
+        <img id="q_img" src="" alt="" style="width:320px;height:260px;object-fit:cover;border-radius:10px">
+        <div style="flex:1;min-width:220px">
+          <div id="q_desc" class="muted"></div>
+          <div style="margin-top:12px"><span id="q_price" class="price"></span></div>
+          <div style="margin-top:12px" id="q_reviews"><strong>Reviews:</strong><div id="q_reviews_list" style="margin-top:8px"></div></div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button class="btn" id="q_add">Add to cart</button>
+            <button class="btn-ghost" onclick="openProductReviewForm()">Write review</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="authModal" class="modal" aria-hidden="true">
+    <div class="panel">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Account</h3>
+        <button class="close-btn" onclick="closeLogin()">✖</button>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:12px;flex-wrap:wrap">
+        <div style="flex:1;min-width:240px">
+          <h4 style="margin-top:0">Login</h4>
+          <input id="loginEmail" placeholder="Email" />
+          <input id="loginPassword" placeholder="Password" type="password" style="margin-top:8px" />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" onclick="doLogin()">Login</button>
+            <button class="btn-ghost" onclick="prefillDemo()">Demo account</button>
+          </div>
+        </div>
+
+        <div style="flex:1;min-width:240px">
+          <h4 style="margin-top:0">Signup</h4>
+          <input id="suName" placeholder="Full name" />
+          <input id="suEmail" placeholder="Email" style="margin-top:8px" />
+          <input id="suPassword" placeholder="Password" type="password" style="margin-top:8px" />
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button class="btn" onclick="doSignup()">Create account</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="checkoutModal" class="modal" aria-hidden="true">
+    <div class="panel" role="dialog">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <h3 style="margin:0">Checkout</h3>
+        <button class="close-btn" onclick="closeCheckout()">✖</button>
+      </div>
+
+      <form id="checkoutForm" style="margin-top:12px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+          <input id="co_name" placeholder="Full Name" required>
+          <input id="co_phone" placeholder="Phone (09...)" required>
+        </div>
+        <textarea id="co_address" placeholder="Delivery address (house, street, barangay, city)" rows="3" style="margin-top:8px" required></textarea>
+
+        <div style="margin-top:8px">
+          <label style="display:block;margin-bottom:6px">Mode of payment</label>
+          <select id="co_payment" required>
+            <option value="cod">Cash on Delivery (COD)</option>
+            <option value="gcash">GCash</option>
+            <option value="card">Credit / Debit Card</option>
+          </select>
+        </div>
+
+        <div style="margin-top:8px;display:flex;gap:8px;align-items:center">
+          <input id="co_promo" placeholder="Promo code (WELCOME20)" style="flex:1">
+          <button type="button" class="btn" onclick="applyCheckoutPromo()">Apply</button>
+        </div>
+
+        <div style="margin-top:12px">
+          <h4 style="margin:0">Order summary</h4>
+          <div id="checkoutSummary" style="margin-top:8px" class="muted"></div>
+          <div style="margin-top:8px;display:flex;justify-content:space-between;font-weight:800"><div>Total</div><div id="checkoutTotal">₱0</div></div>
+        </div>
+
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn" type="submit">Place Order</button>
+          <button type="button" class="btn-ghost" onclick="closeCheckout()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <div id="receiptModal" class="modal" aria-hidden="true">
+    <div class="panel" style="max-width:450px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <h3 style="margin:0;color:var(--accent);">Order Success!</h3>
+            <button class="close-btn" onclick="closeReceipt()">✖</button>
+        </div>
+        <div id="receiptContent" class="receipt-paper">
+            </div>
+        <div style="display:flex;gap:8px;margin-top:16px;justify-content:center;">
+             <button class="btn" onclick="window.print()">Print Receipt</button>
+             <button class="btn-ghost" onclick="closeReceipt()">Close</button>
+        </div>
+    </div>
+  </div>
+
+  <button class="cart-fab" onclick="openCart()">🛒 <span id="cartCountFloat">0</span></button>
+
+<script>
+/* -----------------------
+   THEME LOGIC (Dark/Light)
+   ----------------------- */
+function toggleTheme() {
+    document.body.classList.toggle('light-mode');
+    const isLight = document.body.classList.contains('light-mode');
+    localStorage.setItem('yum_theme', isLight ? 'light' : 'dark');
+    document.getElementById('themeIcon').innerText = isLight ? '🌙' : '☀️';
+}
+// Init theme
+(function initTheme(){
+    const saved = localStorage.getItem('yum_theme');
+    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
+    if(saved === 'light' || (!saved && prefersLight)) {
+        document.body.classList.add('light-mode');
+        document.getElementById('themeIcon').innerText = '🌙';
+    } else {
+        document.getElementById('themeIcon').innerText = '☀️';
+    }
+})();
+
+/* -----------------------
+   PRODUCTS (50) - same dataset as before
+   ----------------------- */
+const PRODUCTS = [
+  {id:'r1',category:'rice',name:'Salted Egg Crispy Chicken Rice',desc:'Crispy chicken w/ salted egg sauce, garlic rice & pickles.',img:'https://www.unileverfoodsolutions.com.my/dam/ufs-my/calcmenu/recipes/salted-eg-fried-with-chicken-chop/Salted-Egg-Fried-Rice-2-1260X709-1.jpg',orig:299,price:239},
+  {id:'r2',category:'rice',name:'Beef Bulgogi Rice Bowl',desc:'Korean bulgogi, sesame & scallions over steamed rice.',img:'https://thefoodietakesflight.com/wp-content/uploads/2021/06/Korean-Inspired-vegan-beef-bulgogi-bowls-recipe-21-of-23.jpg',orig:359,price:289},
+  {id:'r3',category:'rice',name:'Adobo Flakes with Garlic Rice',desc:'Crispy adobo flakes served w/ garlic rice & egg.',img:'https://www.unileverfoodsolutions.com.ph/dam/global-ufs/mcos/SEA/calcmenu/recipes/PH-recipes/red-meats-&-red-meat-dishes/shredded-cripsy-adobo/shredded-cripsy-adobo-main-header.jpg',orig:239,price:189},
+  {id:'r4',category:'rice',name:'Sinigang Pork Rice Meal',desc:'Tamarind soup, tender pork & vegetables served with rice.',img:'https://mealpractice.b-cdn.net/83058690621575168/pork-sinigang-with-bok-choy-and-steamed-rice-bnpFsEdn52.webp',orig:279,price:219},
+  {id:'r5',category:'rice',name:'Honey Garlic Shrimp Rice',desc:'Sauteed shrimp in honey-garlic glaze with steamed rice.',img:'https://disheswithdad.com/wp-content/uploads/2021/01/honey-garlic-shrimp-stir-fry-4.jpg',orig:349,price:279},
+  {id:'r6',category:'rice',name:'Curry Chicken Rice Plate',desc:'Mild curry w/ tender chicken, pickled cucumber & rice.',img:'https://marleyspoon.com/media/recipes/413952/main_photos/large/15-48103a6549f3af74fd0902dcb65baba0.jpeg',orig:319,price:259},
+  {id:'r7',category:'rice',name:'Teriyaki Salmon Rice Bowl',desc:'Grilled salmon w/ teriyaki glaze, greens & rice.',img:'https://www.healthyfood.com/wp-content/uploads/2016/11/Teriyaki-salmon-with-stir-fried-greens-and-brown-rice-1.jpg',orig:399,price:329},
+  {id:'r8',category:'rice',name:'Crispy Pork Sisig Rice',desc:'Sizzling sisig-style pork served on garlic rice.',img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfBuirUxRKeRVpfQeqj-LctjKVYPpOnDNo8w&s',orig:279,price:219},
+  {id:'r9',category:'rice',name:'Veggie Teriyaki Rice',desc:'Stir-fried seasonal veggies with teriyaki & rice.',img:'https://thewoodenskillet.com/wp-content/uploads/2023/03/teriyaki-chicken-stir-fry-recipe-11.jpg',orig:229,price:179},
+
+  {id:'b1',category:'burgers',name:'YumExpress Wagyu Burger',desc:'100% wagyu patty, caramelized onions & truffle mayo.',img:'https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=80',orig:499,price:399},
+  {id:'b2',category:'burgers',name:'Smoky BBQ Angus',desc:'Angus beef, smoked cheddar & house BBQ sauce.',img:'https://www.allrecipes.com/thmb/-XQ4AMTXrhmWD3ktZiqsLdAFVwg=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/AR-14646-Barbecued-Beef-gw-ddmfs-beauty-4x3-0b60ffd60d1c48429748e3f150bc954e.jpg',orig:379,price:319},
+  {id:'b3',category:'burgers',name:'Crispy Chicken Deluxe',desc:'Buttermilk fried chicken, slaw & spicy aioli.',img:'https://www.twodelicious.com/wp-content/uploads/2014/11/Chicken-Sandwich.jpg',orig:329,price:269},
+  {id:'b4',category:'burgers',name:'Mushroom Swiss Veggie',desc:'Grilled portobello, swiss cheese & garlic mayo.',img:'https://embed.widencdn.net/img/beef/s3ccow03qm/1540x1284px/Mushroom-Swiss-Burger-with-Jalapeno-Aioli_FY22_3.tif?keep=c',orig:289,price:239},
+  {id:'b5',category:'burgers',name:'Double Cheese Smash',desc:'Double smashed patties with melty cheese.',img:'https://preview.redd.it/double-cheese-smash-burger-v0-72yoakv3x7cb1.jpg?auto=webp&s=779421db641f9452726f81eb9ee2264361645814',orig:359,price:299},
+  {id:'b6',category:'burgers',name:'Spicy Jalapeño Burger',desc:'Pepper jack, pickled jalapeños & chipotle mayo.',img:'https://www.weber.co.za/wp-content/uploads/2021/11/Spicy_Jalapeno_And_Bacon_Cheeseburgers.jpeg',orig:339,price:279},
+  {id:'b7',category:'burgers',name:'Classic Cheeseburger',desc:'Juicy patty, cheddar, lettuce & tomato.',img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRR5RgQ89cGmMqK4098b38Qvd1bRUTwvs_SCg&s',orig:279,price:219},
+  {id:'b8',category:'burgers',name:'Teriyaki Chicken Burger',desc:'Grilled chicken w/ sweet teriyaki glaze.',img:'https://spicysouthernkitchen.com/wp-content/uploads/2022/08/Teriyaki-Chicken-Burgers-4.jpg',orig:299,price:239},
+  {id:'b9',category:'burgers',name:'Blue Cheese & Bacon',desc:'Savory bacon with creamy blue cheese & arugula.',img:'https://www.atablefullofjoy.com/wp-content/uploads/2019/10/blue-cheese-bacon-burger-featured.jpg',orig:389,price:329},
+
+  {id:'p1',category:'pasta',name:'Truffle Alfredo Linguine',desc:'Creamy truffle alfredo, parmesan & cracked pepper.',img:'https://somuchfoodblog.com/wp-content/uploads/2025/03/Truffle-Mushroom-Pasta9-493x740.jpg',orig:399,price:329},
+  {id:'p2',category:'pasta',name:'Spaghetti Bolognese',desc:'Slow-simmered ragu with parmesan.',img:'https://playswellwithbutter.com/wp-content/uploads/2022/12/Braised-Beef-Ragu-17.jpg',orig:319,price:259},
+  {id:'p3',category:'pasta',name:'Pesto Genovese Penne',desc:'Basil pesto, pine nuts & cherry tomatoes.',img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMoQdf4TkK4lomqITVNk6mvzwBE9DtEXPqmg&s',orig:329,price:269},
+  {id:'p4',category:'pasta',name:'Seafood Marinara',desc:'Mixed seafood in rich tomato sauce over spaghetti.',img:'https://realfood.tesco.com/media/images/RFO-SpaghettiAl-LargeHero-1400x919-mini-83f49843-c092-4830-b2f6-a3fa90d1328c-0-1400x920.jpg',orig:429,price:359},
+  {id:'p5',category:'pasta',name:'Carbonara with Bacon',desc:'Creamy carbonara with egg yolk & crispy bacon.',img:'https://littlespoonfarm.com/wp-content/uploads/2024/07/Pasta-Carbonara-Recipe.jpg',orig:349,price:289},
+  {id:'p6',category:'pasta',name:'Creamy Mushroom Fusilli',desc:'Mushrooms, garlic & white wine cream.',img:'https://www.easycheesyvegetarian.com/wp-content/uploads/2024/02/pasta-white-wine-sauce-mushrooms-featured-1.jpg',orig:319,price:259},
+  {id:'p7',category:'pasta',name:'Spicy Arrabbiata',desc:'Tomato arrabbiata with chili flakes & basil.',img:'https://cdn.loveandlemons.com/wp-content/uploads/2025/09/arrabiata.jpg',orig:299,price:239},
+  {id:'p8',category:'pasta',name:'Lobster Mac & Cheese',desc:'Mac & cheese with lobster chunks & cheddar.',img:'https://tatyanaseverydayfood.com/wp-content/uploads/2024/02/The-Best-Lobster-Mac-Cheese-Recipe-6.jpg',orig:499,price:429},
+
+  {id:'pi1',category:'pizza',name:'Truffle Mushroom Pizza (12")',desc:'Wild mushrooms, truffle oil & fontina cheese.',img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVi59i6laLgdBG6ftl0fILezTDSYm5My8b9A&s',orig:599,price:499},
+  {id:'pi2',category:'pizza',name:'Classic Margherita (12")',desc:'San Marzano tomatoes, basil & buffalo mozzarella.',img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR1WnxsA9jLLDV_vlBaXMyBrn0CO5Zn0VxqiQ&s',orig:499,price:399},
+  {id:'pi3',category:'pizza',name:'Pepperoni Deluxe (12")',desc:'Double pepperoni & chili oil.',img:'https://villagepubpizza.com/cdn/shop/products/Pizza_DLX_Pep_58d83412-3b96-4b6b-b512-a9bc38da727c_952x.jpg?v=1627554909',orig:549,price:449},
+  {id:'pi4',category:'pizza',name:'Four Cheese Pizza (12")',desc:'Mozzarella, gorgonzola, parmesan & fontina.',img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRpyQIFzdTSL-iCqL6c3lAJ8sGMnyY_N0EEvQ&s',orig:579,price:479},
+  {id:'pi5',category:'pizza',name:'Hawaiian Gourmet (12")',desc:'Ham, pineapple & smoked cheese.',img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSelaQ5u2OGLEzJus2dafEHshnIH1P_0oiIYg&s',orig:529,price:439},
+  {id:'pi6',category:'pizza',name:'BBQ Chicken Pizza (12")',desc:'Grilled chicken, BBQ sauce & red onion.',img:'https://www.allrecipes.com/thmb/ee0daLeNNIUcrKbm5nxwFXheMDM=/0x512/filters:no_upscale():max_bytes(150000):strip_icc()/AR-24878-bbq-chicken-pizza-beauty-4x3-39cd80585ad04941914dca4bd82eae3d.jpg',orig:559,price:459},
+  {id:'pi7',category:'pizza',name:'Vegetarian Supreme (12")',desc:'Seasonal veggies, olives & peppers.',img:'https://www.thursdaynightpizza.com/wp-content/uploads/2022/06/veggie-pizza-overhead-sliced-720x900.png',orig:519,price:419},
+  {id:'pi8',category:'pizza',name:'Seafood Lover Pizza (12")',desc:'Shrimp, calamari & garlic on white sauce.',img:'https://scrupulouscatholic.com/wp-content/uploads/2025/08/Seafood-Lovers-Pizza-720x720.png',orig:649,price:549},
+
+  {id:'d1',category:'drinks',name:'Iced Signature Cold Brew (Large)',desc:'Slow-brewed cold brew, lightly sweetened.',img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTNblVHokXg9-WM8YJ7SxTMPu2B63MaUICR6g&s',orig:149,price:119},
+  {id:'d2',category:'drinks',name:'Mango Smoothie',desc:'Fresh mango puree with yogurt & crushed ice.',img:'https://www.skyaurant.com/uploads/editor/files/%E8%8A%92%E6%9E%9C%E5%86%B0%E6%B2%99(1).jpg',orig:179,price:139},
+  {id:'d3',category:'drinks',name:'Classic Lemon Iced Tea',desc:'Brewed tea with lemon & cane sugar.',img:'https://data.thefeedfeed.com/static/2020/06/18/15920866565ee5508036e54.jpg',orig:129,price:99},
+  {id:'d4',category:'drinks',name:'Matcha Latte (Iced)',desc:'Premium matcha with milk & honey.',img:'https://cdn.loveandlemons.com/wp-content/uploads/2023/06/iced-matcha-latte.jpg',orig:189,price:149},
+  {id:'d5',category:'drinks',name:'Sparkling Citrus Soda',desc:'Citrus soda with fresh lime.',img:'https://munchingwithmariyah.com/wp-content/uploads/2022/06/IMG_4009-scaled.jpg',orig:119,price:89},
+  {id:'d6',category:'drinks',name:'Hot Chocolate Deluxe',desc:'Velvety hot chocolate with whipped cream.',img:'https://tidymom.net/blog/wp-content/uploads/2015/12/red-velvet-hot-chocolate-mug-feature.jpg',orig:149,price:119},
+  {id:'d7',category:'drinks',name:'Bubble Milk Tea',desc:'refreshing tea preparation of milk tea served with sweet chewy boba',img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQku1NyeqcLUIAAs4PHJJE_FU8R6jIhWW_Dwg&s',orig:129,price:99},
+  {id:'d8',category:'drinks',name:'Coffee ice cream frappe',desc:'A decadent, frosty blend of rich chocolate and coffee.',img:'https://www.thehungrybites.com/wp-content/uploads/2023/06/coffee-ice-cream-frappe-frappuccino-feat-500x500.jpg',orig:189,price:149},
+
+  {id:'ds1',category:'desserts',name:'Salted Caramel Cheesecake',desc:'Rich cheesecake with salted caramel glaze.',img:'https://sugarspunrun.com/wp-content/uploads/2023/08/Salted-caramel-cheesecake-1-of-1.jpg',orig:229,price:179},
+  {id:'ds2',category:'desserts',name:'Molten Chocolate Lava Cake',desc:'Warm chocolate cake with molten center.',img:'https://bluebowlrecipes.com/wp-content/uploads/2022/01/molten-chocolate-lava-cakes-for-two-7641-500x500.jpg',orig:199,price:159},
+  {id:'ds3',category:'desserts',name:'Crème Brûlée',desc:'Silky custard with caramelized sugar top.',img:'https://www.vanillabeancuisine.com/wp-content/uploads/2023/09/Creme-Brulee-21.jpg',orig:199,price:159},
+  {id:'ds4',category:'desserts',name:'Ube Halo-Halo Cup',desc:'Shaved ice w/ ube, leche flan & toppings.',img:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTqkE2QFsh6U0jt0-dH6AQBgXx3sO4n5-UaJg&s',orig:219,price:169},
+  {id:'ds5',category:'desserts',name:'Classic Tiramisu',desc:'Mascarpone layered tiramisu',img:'https://cdn7.kiwilimon.com/recetaimagen/35448/640x640/42520.jpg.jpg',orig:239,price:189},
+  {id:'ds6',category:'desserts',name:'Matcha Mille Crepe',desc:'Thin crepe layers with matcha cream.',img:'https://school-of-wok.s3.eu-west-2.amazonaws.com/recipes/show_images/f6ef6b2f0a3819b481d177a58edd5ed6.jpg',orig:249,price:199},
+  {id:'ds7',category:'desserts',name:'Pistachio Baklava',desc:'Honeyed pastry with pistachio crunch.',img:'https://images.squarespace-cdn.com/content/v1/63f2ad31131cec38e6923d84/c0dd8f2a-2382-43e3-aed3-3b1d85c8eb47/baklava.jpg',orig:189,price:149},
+  {id:'ds8',category:'desserts',name:'Strawberry Crepe Cake',desc:'A delicate, layered cake made with thin crepes, sweet cream, and fresh strawberries.',img:'https://healthytasteoflife.com/wp-content/uploads/2022/05/strawberry-crepe-cake-featured-image-1.jpg',orig:199,price:159},
+];
+
+/* product reviews (per-item) */
+const PRODUCT_REVIEWS = {};
+for(const p of PRODUCTS){
+  PRODUCT_REVIEWS[p.id] = [
+    {name:'AnaRose',rating:5,text:`Loved the ${p.name.toLowerCase()} — arrived hot and delicious.`,time:Date.now()-Math.floor(Math.random()*8)*3600000},
+    {name:'joyce',rating:4,text:`Tasty and premium. Portion could be slightly bigger.`,time:Date.now()-Math.floor(Math.random()*48)*3600000},
+    {name:'Alili',rating:5,text:`Would order again — great flavor.`,time:Date.now()-Math.floor(Math.random()*120)*3600000}
+  ].slice(0, Math.random() > 0.5 ? 3 : 2);
+}
+
+/* aggregate reviews */
+let reviews = [
+  {id:'rv1',cat:'rice',name:'Sampling',rating:5,text:'Warm & flavorful rice meals. Highly recommend.',photo:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbM9pSYIqlAeRHIFZrZsiMfeguyhbDcx245HEbwW76c-IOdN9PRv1D6_o5u_-W7JCRoGM&usqp=CAU',time:Date.now()-86400000},
+  {id:'rv2',cat:'burgers',name:'joyce',rating:5,text:'Wagyu burger was top-tier. Juicy & tender.',photo:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRkRKsu2KaqbMjFOmKIhXX2PDYggS6lGjFAwBFa16VKEmdfCQbuJTIIZMll5u7RwT--Qow&usqp=CAU',time:Date.now()-3600000},
+  {id:'rv3',cat:'desserts',name:'alili',rating:4,text:'Desserts arrived intact and delicious.',photo:'https://i.pinimg.com/736x/96/c1/46/96c146d85768edf567549a2b093fb42c.jpg',time:Date.now()-64000000},
+  {id:'rv4',cat:'pizza',name:'Emma',rating:5,text:'Pizza crust was amazing. Excellent partner restaurants.',photo:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRL0A7AzjUk8pGHArmArifr5QaKLczYdRB9E5xc30H_8U0lxfTghe4msswVmaISn36eWSI&usqp=CAU',time:Date.now()-26000000},
+  {id:'rv5',cat:'drinks',name:'AnaRose',rating:4,text:'Cold brew is perfect. Great packaging.',photo:'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVrlveY6vKy4MWZID740LvEJYWMqfkaSoNJh0DvZMgXO2c9XeiVscYScEDFgv9uNTv2mE&usqp=CAU',time:Date.now()-16000000},
+];
+
+/* storage keys and state */
+const CART_KEY = 'yum_cart_v3_final';
+const REV_KEY = 'yum_reviews_v3_final';
+const USERS_KEY = 'yum_users_v_final';
+const ORDERS_KEY = 'yum_orders_v_final';
+const FIRST_SHIP_KEY = 'yum_first_shipping_used';
+let cart = JSON.parse(localStorage.getItem(CART_KEY) || '[]');
+const storedReviews = JSON.parse(localStorage.getItem(REV_KEY) || 'null');
+if(storedReviews) reviews = storedReviews;
+let users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]');
+let currentUser = JSON.parse(sessionStorage.getItem('yum_current_user') || 'null');
+
+/* Utilities */
+function formatPeso(n){ return '₱' + n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); }
+function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+
+/* RENDER PRODUCTS */
+function renderProducts(){
+  const grid = document.getElementById('productGrid');
+  const q = (document.getElementById('filterSearch')?.value || '').toLowerCase().trim();
+  const cat = document.getElementById('categoryFilter')?.value || 'all';
+  const filtered = PRODUCTS.filter(p=>{
+    const matchesCat = cat === 'all' || p.category === cat;
+    const matchesQ = !q || p.name.toLowerCase().includes(q) || p.desc.toLowerCase().includes(q);
+    return matchesCat && matchesQ;
+  });
+  document.getElementById('showingLabel').innerText = `Showing: ${cat === 'all' ? 'All' : (cat.charAt(0).toUpperCase()+cat.slice(1))}`;
+  if(!filtered.length){ grid.innerHTML = '<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text-muted)">No items found.</div>'; return; }
+  grid.innerHTML = filtered.map(p=>{
+    const revs = PRODUCT_REVIEWS[p.id] || [];
+    const avg = (revs.reduce((s,r)=>s+r.rating,0) / Math.max(1,revs.length)).toFixed(1);
+    const sampleText = revs[0]?.text || '';
+    return `
+      <article class="card" data-id="${p.id}">
+        <img src="${p.img}" alt="${escapeHtml(p.name)}" loading="lazy" onclick="openQuick('${p.id}')">
+        <div><h4>${escapeHtml(p.name)}</h4><div class="meta">${escapeHtml(p.desc)}</div></div>
+        <div class="rating-line"><div class="tiny-star">★ ${avg}</div><div class="muted">${revs.length} reviews</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center" class="card-footer">
+          <div>
+            <div style="text-decoration:line-through;color:#999;font-size:13px">₱${p.orig}</div>
+            <div class="price">${formatPeso(p.price)}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;align-items:flex-end">
+            <div style="font-size:13px;color:var(--text-muted);max-width:200px;text-align:right">${escapeHtml(sampleText)}</div>
+            <div style="display:flex;gap:8px">
+              <button class="small-btn" onclick="openQuick('${p.id}')">Quick</button>
+              <button class="small-btn" onclick="addToCart('${p.id}',1)">Add</button>
+            </div>
+          </div>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+/* QUICK VIEW */
+function openQuick(id){
+  const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
+  document.getElementById('q_img').src = p.img;
+  document.getElementById('q_name').innerText = p.name;
+  document.getElementById('q_desc').innerText = p.desc;
+  document.getElementById('q_price').innerText = formatPeso(p.price);
+  document.getElementById('q_add').onclick = ()=>{ addToCart(id,1); closeQuick(); };
+  const qlist = document.getElementById('q_reviews_list'); qlist.innerHTML='';
+  const revs = PRODUCT_REVIEWS[id] || [];
+  if(!revs.length) qlist.innerHTML = '<div class="muted">No reviews yet for this item.</div>';
+  else qlist.innerHTML = revs.slice().reverse().map(r=>`<div style="margin-bottom:8px"><strong>${escapeHtml(r.name)}</strong> — ${'★'.repeat(r.rating)}<div class="muted" style="font-size:13px">${escapeHtml(r.text)}</div></div>`).join('');
+  document.getElementById('quickView').style.display = 'flex';
+}
+function closeQuick(){ document.getElementById('quickView').style.display = 'none'; }
+
+/* CART FUNCTIONS (with FREE shipping on first order) */
+function saveCart(){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); updateCartUI(); }
+
+function firstOrderShippingIsFree(){
+  // shipping free if FIRST_SHIP_KEY not set, and no saved orders exist
+  const usedFlag = localStorage.getItem(FIRST_SHIP_KEY);
+  const orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+  return (!usedFlag && (!orders || orders.length === 0));
+}
+
+function addToCart(id, qty=1){
+  const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
+  const existing = cart.find(i=>i.id===id);
+  if(existing) existing.qty += qty; else cart.push({id:p.id,name:p.name,price:p.price,img:p.img,qty:qty});
+  saveCart(); toast(`${p.name} added to cart`);
+}
+function removeCartItem(id){ cart = cart.filter(i=>i.id!==id); saveCart(); }
+function changeQty(id, delta){ const it = cart.find(i=>i.id===id); if(!it) return; it.qty = Math.max(1, it.qty + delta); saveCart(); }
+function clearCart(){ if(!confirm('Clear cart?')) return; cart=[]; saveCart(); }
+function computeCartTotals(){
+  const subtotal = cart.reduce((s,i)=>s + i.price * i.qty, 0);
+  // shipping normally 80, unless free on first order (see flag)
+  const shipping = cart.length ? (firstOrderShippingIsFree() ? 0 : 80) : 0;
+  const total = subtotal + shipping;
+  return {subtotal,shipping,total};
+}
+function updateCartUI(){
+  document.getElementById('cartCount').innerText = cart.reduce((s,i)=>s + i.qty,0) || 0;
+  document.getElementById('cartCountFloat').innerText = cart.reduce((s,i)=>s + i.qty,0) || 0;
+  const list = document.getElementById('cartItems');
+  if(!cart.length){ list.innerHTML = '<div class="muted">Your cart is empty.</div>'; }
+  else{
+    list.innerHTML = cart.map(i=>`
+      <div style="display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dashed var(--border)">
+        <img src="${i.img}" class="cart-item-img">
+        <div style="flex:1">
+          <div style="font-weight:700; color:var(--text-main)">${escapeHtml(i.name)}</div>
+          <div style="color:var(--text-muted);font-size:13px">Qty: ${i.qty}</div>
+          <div style="margin-top:6px;color:var(--accent);font-weight:800">${formatPeso(i.price * i.qty)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="small-btn" onclick="changeQty('${i.id}',1)">＋</button>
+          <button class="small-btn" onclick="changeQty('${i.id}',-1)">−</button>
+          <button class="small-btn" onclick="removeCartItem('${i.id}')">Remove</button>
+        </div>
+      </div>
+    `).join('');
+  }
+  const totals = computeCartTotals();
+  document.getElementById('cartSubtotal').innerText = formatPeso(totals.subtotal);
+  document.getElementById('cartShipping').innerText = totals.shipping === 0 ? 'FREE' : formatPeso(totals.shipping);
+  document.getElementById('cartTotal').innerText = formatPeso(totals.total);
+  const cs = document.getElementById('cartSnapshot');
+  cs.innerHTML = cart.length ? cart.map(i=>`<div style="display:flex;justify-content:space-between"><div>${escapeHtml(i.name)} ×${i.qty}</div><div>${formatPeso(i.price * i.qty)}</div></div>`).join('') + `<div style="margin-top:8px;font-weight:800">Total: ${formatPeso(totals.total)}</div>` : '<div class="muted">Cart empty</div>';
+  localStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
+
+/* OPEN/CLOSE CART */
+function openCart(){ document.getElementById('cartDrawer').classList.add('open'); document.getElementById('cartDrawer').setAttribute('aria-hidden','false'); updateCartUI(); }
+function closeCart(){ document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('cartDrawer').setAttribute('aria-hidden','true'); }
+
+/* CHECKOUT FLOW */
+let checkoutPromoApplied = false;
+function openCheckout(){
+  if(!cart.length){ alert('Your cart is empty. Add items to checkout.'); return; }
+  populateCheckoutSummary();
+  document.getElementById('checkoutModal').style.display = 'flex';
+}
+function closeCheckout(){ document.getElementById('checkoutModal').style.display = 'none'; checkoutPromoApplied = false; document.getElementById('co_promo').value=''; }
+
+function populateCheckoutSummary(){
+  const totals = computeCartTotals();
+  let subtotal = totals.subtotal;
+  let shipping = totals.shipping;
+  let discount = 0;
+  if(checkoutPromoApplied){ discount = Math.floor(subtotal * 0.20); } // 20% off subtotal
+  const final = Math.max(0, subtotal + shipping - discount);
+  const summaryHtml = cart.map(i=>`<div style="display:flex;justify-content:space-between"><div>${escapeHtml(i.name)} ×${i.qty}</div><div>${formatPeso(i.price * i.qty)}</div></div>`).join('') +
+    `<div style="margin-top:8px;color:var(--text-muted)">Subtotal: ${formatPeso(subtotal)} | Delivery: ${shipping === 0 ? 'FREE' : formatPeso(shipping)} | Discount: ${formatPeso(discount)}</div>`;
+  document.getElementById('checkoutSummary').innerHTML = summaryHtml;
+  document.getElementById('checkoutTotal').innerText = formatPeso(final);
+}
+
+function applyCheckoutPromo(){
+  const code = (document.getElementById('co_promo').value || '').trim().toUpperCase();
+  if(!code) return toast('Enter promo code');
+  if(code === 'WELCOME20'){
+    checkoutPromoApplied = true;
+    toast('WELCOME20 applied (20% off subtotal)');
+    populateCheckoutSummary();
+  } else {
+    toast('Promo code invalid');
+  }
+}
+
+/* HANDLE CHECKOUT SUBMIT */
+document.getElementById('checkoutForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('co_name').value.trim();
+  const phone = document.getElementById('co_phone').value.trim();
+  const address = document.getElementById('co_address').value.trim();
+  const payment = document.getElementById('co_payment').value;
+  if(!name||!phone||!address||!payment) return alert('Complete all fields.');
+  
+  const totals = computeCartTotals();
+  const subtotal = totals.subtotal;
+  const shipping = totals.shipping;
+  const discount = checkoutPromoApplied ? Math.floor(subtotal * 0.20) : 0;
+  const final = Math.max(0, subtotal + shipping - discount);
+  
+  const order = {
+    id: 'ORD' + Date.now(),
+    user: currentUser?.email || 'guest',
+    name, phone, address, payment,
+    items: cart,
+    subtotal, delivery: shipping, discount, total: final, time: Date.now()
+  };
+  
+  // save orders
+  const orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+  orders.push(order);
+  localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+  
+  if(firstOrderShippingIsFree()){
+    localStorage.setItem(FIRST_SHIP_KEY, 'true');
+  }
+  
+  // *** VISUAL RECEIPT GENERATION ***
+  const itemsHtml = order.items.map(i => `
+      <div class="receipt-row">
+          <span>${i.name} x${i.qty}</span>
+          <span>${formatPeso(i.price * i.qty)}</span>
+      </div>
+  `).join('');
+  
+  const receiptHtml = `
+      <div style="text-align:center; margin-bottom:15px;">
+          <h2 style="margin:0; text-transform:uppercase;">YumExpress</h2>
+          <small>${new Date(order.time).toLocaleString()}</small>
+          <br><small>Order ID: ${order.id}</small>
+      </div>
+      <div class="receipt-line"></div>
+      <div style="font-size:14px;">
+          <strong>Customer:</strong> ${order.name}<br>
+          <strong>Phone:</strong> ${order.phone}<br>
+          <strong>Address:</strong> ${order.address}<br>
+          <strong>Payment:</strong> ${order.payment.toUpperCase()}
+      </div>
+      <div class="receipt-line"></div>
+      ${itemsHtml}
+      <div class="receipt-line"></div>
+      <div class="receipt-row"><span>Subtotal:</span> <span>${formatPeso(order.subtotal)}</span></div>
+      <div class="receipt-row"><span>Delivery:</span> <span>${order.delivery === 0 ? 'FREE' : formatPeso(order.delivery)}</span></div>
+      ${order.discount > 0 ? `<div class="receipt-row"><span>Discount:</span> <span>-${formatPeso(order.discount)}</span></div>` : ''}
+      <div class="receipt-line"></div>
+      <div class="receipt-row" style="font-weight:bold; font-size:1.2em;">
+          <span>TOTAL:</span> <span>${formatPeso(order.total)}</span>
+      </div>
+      <div style="text-align:center; margin-top:20px;">
+          <small>Thank you for ordering!</small>
+      </div>
+  `;
+  
+  document.getElementById('receiptContent').innerHTML = receiptHtml;
+  document.getElementById('receiptModal').style.display = 'flex';
+  
+  cart = []; saveCart(); closeCheckout(); closeCart();
+  renderFreeShippingBanner();
+});
+
+function closeReceipt(){
+    document.getElementById('receiptModal').style.display = 'none';
+}
+
+/* REVIEWS */
+function saveReviews(){ localStorage.setItem(REV_KEY, JSON.stringify(reviews)); }
+function renderReviewsSection(){
+  const list = document.getElementById('reviewsList');
+  list.innerHTML = reviews.slice().reverse().map(r=>`
+    <div class="review-item">
+      <img src="${r.photo || 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80'}" alt="${escapeHtml(r.name)}">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px"><strong style="color:var(--text-main)">${escapeHtml(r.name)}</strong><div style="color:var(--accent)">${'★'.repeat(r.rating)}</div></div>
+        <div style="color:var(--text-muted);margin-top:6px">${escapeHtml(r.text)}</div>
+        <div style="font-size:12px;color:#999;margin-top:6px">${new Date(r.time).toLocaleString()}</div>
+      </div>
+    </div>
+  `).join('');
+  document.getElementById('featuredReviews').innerHTML = reviews.slice(-2).map(r=>`<div style="margin-bottom:8px"><strong style="color:var(--text-main)">${escapeHtml(r.name)}</strong> — ${'★'.repeat(r.rating)}<div class="muted" style="font-size:13px">${escapeHtml(r.text)}</div></div>`).join('');
+  document.getElementById('topReviewsList').innerHTML = reviews.slice(-3).map(r=>`<div style="margin-bottom:8px"><strong style="color:var(--text-main)">${escapeHtml(r.name)}</strong><div class="muted" style="font-size:13px">${escapeHtml(r.text)}</div></div>`).join('');
+  const avg = (reviews.reduce((s,r)=>s+r.rating,0)/Math.max(1,reviews.length)).toFixed(1);
+  document.getElementById('overallRating').innerText = avg;
+}
+
+/* *** UPDATED FUNCTION TO SUPPORT PHOTO URL *** */
+function openProductReviewForm(){
+  const name = prompt('Your name'); if(!name) return;
+  const rating = prompt('Rating (1-5)'); const r = Number(rating); if(!r || r<1||r>5) return alert('Invalid rating');
+  const text = prompt('Your review'); if(!text) return;
+  const photoUrl = prompt('Profile Photo URL (optional):'); // NEW: Ask for photo URL
+
+  const pid = PRODUCTS.find(p => p.name === document.getElementById('q_name').innerText)?.id;
+  if(!pid) return;
+  
+  PRODUCT_REVIEWS[pid] = PRODUCT_REVIEWS[pid] || [];
+  PRODUCT_REVIEWS[pid].push({name, rating:r, text, time:Date.now()});
+  
+  reviews.push({
+      id:'rv'+Date.now(),
+      cat:PRODUCTS.find(p=>p.id===pid).category,
+      name,
+      rating:r,
+      text,
+      photo: photoUrl || '', // Use the URL provided or empty string
+      time:Date.now()
+  });
+  
+  saveReviews(); renderReviewsSection(); closeQuick(); toast('Thanks — review added (local)');
+}
+
+/* AUTH (localStorage-based) */
+function openLogin(){ document.getElementById('authModal').style.display='flex'; }
+function closeLogin(){ document.getElementById('authModal').style.display='none'; }
+function doSignup(){
+  const name = document.getElementById('suName').value.trim();
+  const email = document.getElementById('suEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('suPassword').value;
+  if(!name||!email||!pass) return alert('Complete signup fields');
+  if(users.find(u=>u.email===email)) return alert('Email already used');
+  users.push({name,email,password:pass});
+  localStorage.setItem(USERS_KEY, JSON.stringify(users));
+  sessionStorage.setItem('yum_current_user', JSON.stringify({name,email}));
+  currentUser = {name,email};
+  closeLogin(); refreshAuthUI(); toast('Account created & logged in');
+}
+function doLogin(){
+  const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('loginPassword').value;
+  const found = users.find(u=>u.email===email && u.password===pass);
+  if(!found) return alert('Invalid credentials (demo: use demo account)');
+  sessionStorage.setItem('yum_current_user', JSON.stringify({name:found.name,email:found.email}));
+  currentUser = {name:found.name,email:found.email};
+  closeLogin(); refreshAuthUI(); toast('Logged in');
+}
+function prefillDemo(){
+  if(!users.find(u=>u.email==='demo@yum.com')){ users.push({name:'Demo User',email:'demo@yum.com',password:'demo'}); localStorage.setItem(USERS_KEY, JSON.stringify(users)); }
+  document.getElementById('loginEmail').value = 'demo@yum.com';
+  document.getElementById('loginPassword').value = 'demo';
+  toast('Demo credentials filled');
+}
+function doLogout(){ sessionStorage.removeItem('yum_current_user'); currentUser = null; refreshAuthUI(); toast('Logged out'); }
+function refreshAuthUI(){
+  const area = document.getElementById('userArea');
+  const accWidget = document.getElementById('accountWidget');
+  if(currentUser){
+    area.innerHTML = `<div style="display:flex;gap:8px;align-items:center"><div class="muted">Hi, ${escapeHtml(currentUser.name.split(' ')[0])}</div><button class="icon-btn" onclick="doLogout()">Logout</button></div>`;
+    accWidget.innerHTML = `<div style="font-weight:700; color:var(--text-main)">${escapeHtml(currentUser.name)}</div><div class="muted" style="font-size:13px">${escapeHtml(currentUser.email)}</div>`;
+  } else {
+    area.innerHTML = `<button class="icon-btn" onclick="openLogin()">Login / Signup</button>`;
+    accWidget.innerHTML = `<div class="muted">Not signed in</div><div style="display:flex;gap:8px;margin-top:8px"><button class="btn-ghost" onclick="openLogin()">Login / Signup</button></div>`;
+  }
+}
+
+/* SHIP BANNER: show/hide based on first-order flag */
+function renderFreeShippingBanner(){
+  const usedFlag = localStorage.getItem(FIRST_SHIP_KEY);
+  const orders = JSON.parse(localStorage.getItem(ORDERS_KEY) || '[]');
+  const banner = document.getElementById('freeShippingBanner');
+  // show banner only if free shipping not used and no orders exist (or orders empty)
+  if(!usedFlag && (!orders || orders.length === 0)){
+    banner.style.display = 'flex';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+function dismissFreeShipping(){ localStorage.setItem(FIRST_SHIP_KEY, 'true'); renderFreeShippingBanner(); toast('Banner dismissed — free shipping will no longer show'); }
+
+/* small toast */
+function toast(msg){ const el = document.createElement('div'); el.style.position='fixed'; el.style.bottom='28px'; el.style.left='50%'; el.style.transform='translateX(-50%)'; el.style.background='rgba(0,0,0,0.8)'; el.style.color='#fff'; el.style.padding='10px 14px'; el.style.borderRadius='10px'; el.style.zIndex=9999; el.innerText = msg; document.body.appendChild(el); setTimeout(()=>el.remove(),1600); }
+
+/* EVENTS & INIT */
+document.getElementById('filterSearch')?.addEventListener('input', ()=>renderProducts());
+document.getElementById('categoryFilter')?.addEventListener('change', ()=>{ renderProducts(); highlightCategoryButton(document.getElementById('categoryFilter').value); });
+document.getElementById('globalSearch')?.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ document.getElementById('filterSearch').value = e.target.value; renderProducts(); scrollToSection('menu'); }});
+document.getElementById('promoCopy')?.addEventListener('click', ()=>{ navigator.clipboard?.writeText('WELCOME20').then(()=>toast('Copied WELCOME20')).catch(()=>prompt('Copy code','WELCOME20')); });
+
+function highlightCategoryButton(cat){ document.querySelectorAll('.cat-btn').forEach(b=> b.classList.toggle('active', b.dataset.cat === cat)); }
+function setCategory(cat){ document.getElementById('categoryFilter') && (document.getElementById('categoryFilter').value = cat); document.getElementById('filterSearch') && (document.getElementById('filterSearch').value = ''); highlightCategoryButton(cat); renderProducts(); scrollToSection('menu'); }
+function scrollToSection(id){ document.getElementById(id).scrollIntoView({behavior:'smooth', block:'start'}); }
+function checkoutMock(){ openCart(); alert('This is a checkout mock. Open checkout to fill in details and place order.'); }
+
+/* allow modal overlay click to close */
+document.querySelectorAll('.modal').forEach(m=> m.addEventListener('click', (e)=>{ if(e.target===m) m.style.display='none'; }));
+document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ document.querySelectorAll('.modal').forEach(m=>m.style.display='none'); closeCart(); closeQuick(); closeReceipt(); }});
+
+/* initial render */
+renderProducts();
+renderReviewsSection();
+updateCartUI();
+refreshAuthUI();
+renderFreeShippingBanner();
+
+</script>
+</body>
+</html>
